@@ -1,0 +1,17 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "goldtrace.lineage.event.v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_id", "event_id", "stage", "action", "subject_hash", "parent_hashes", "timestamp"],
+  "properties": {
+    "schema_id": {"const": "goldtrace.lineage.event.v1"},
+    "event_id": {"type": "string"},
+    "stage": {"type": "string"},
+    "action": {"type": "string"},
+    "subject_hash": {"type": "string"},
+    "parent_hashes": {"type": "array", "items": {"type": "string"}},
+    "timestamp": {"type": "string"},
+    "metadata": {"type": "object"}
+  }
+}

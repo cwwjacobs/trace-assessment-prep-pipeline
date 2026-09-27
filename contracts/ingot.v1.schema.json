@@ -1,0 +1,512 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "goldtrace.refinery.ingot.v1",
+  "title": "Gold Trace Refinery Ingot",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_id",
+    "ingot_id",
+    "source_class",
+    "source_bundle_hash",
+    "source_manifest_hash",
+    "evaluation_path",
+    "foundry_evaluation",
+    "mechanical_run_status",
+    "seal_status",
+    "normalized_event_stream_hash",
+    "deterministic_results",
+    "redaction",
+    "quarantine",
+    "dedup",
+    "lineage_parents",
+    "refinery_receipt_hash",
+    "refinery_status"
+  ],
+  "properties": {
+    "schema_id": {
+      "const": "goldtrace.refinery.ingot.v1"
+    },
+    "ingot_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "source_class": {
+      "type": "string",
+      "enum": [
+        "goldtrace_mine_bundle",
+        "rune_capture",
+        "chat_export",
+        "legacy_corpus"
+      ]
+    },
+    "source_bundle_hash": {
+      "type": "string",
+      "minLength": 64,
+      "maxLength": 64
+    },
+    "source_manifest_hash": {
+      "type": "string",
+      "minLength": 1
+    },
+    "evaluation_path": {
+      "description": "Which pipeline produced this ingot. The legacy value asserts only that Refinery verified the sealed bundle directly; it must never be read as evidence that Foundry evaluation occurred.",
+      "enum": [
+        "three_tier_labyrinth_foundry_refinery",
+        "legacy_direct_labyrinth_to_refinery"
+      ]
+    },
+    "foundry_evaluation": {
+      "description": "Tier-2 evaluation lineage. Null on the legacy direct path. Populated only after Refinery independently recomputed the bundle and manifest hashes and confirmed the receipt binds to them.",
+      "type": [
+        "object",
+        "null"
+      ],
+      "required": [
+        "receipt_schema_id",
+        "receipt_schema_version",
+        "receipt_hash",
+        "status",
+        "evaluation_pack_id",
+        "evaluation_pack_version",
+        "evaluation_pack_hash",
+        "trust"
+      ],
+      "properties": {
+        "receipt_schema_id": {
+          "const": "gtdataworks.foundry.evaluation_receipt.v1"
+        },
+        "receipt_schema_version": {
+          "type": "string"
+        },
+        "receipt_hash": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "status": {
+          "type": "string"
+        },
+        "evaluation_pack_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "evaluation_pack_version": {
+          "type": "string",
+          "minLength": 1
+        },
+        "evaluation_pack_hash": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "foundry_package": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "foundry_version": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "foundry_code_sha256": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "model_identity": {
+          "type": [
+            "object",
+            "null"
+          ]
+        },
+        "deterministic": {
+          "type": "boolean"
+        },
+        "evaluation_counts": {
+          "type": "object"
+        },
+        "evidence_gaps": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "limitations": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "evaluated_at": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "trust": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "channel",
+            "issuer_id",
+            "key_id",
+            "pack_identity_verified",
+            "evaluation_consistency_verified"
+          ],
+          "properties": {
+            "channel": {
+              "const": "hmac-sha256"
+            },
+            "issuer_id": {
+              "type": "string",
+              "minLength": 1
+            },
+            "key_id": {
+              "type": "string",
+              "minLength": 1
+            },
+            "pack_identity_verified": {
+              "const": true
+            },
+            "evaluation_consistency_verified": {
+              "const": true
+            }
+          }
+        }
+      }
+    },
+    "mine_run_id": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "domain_claim_id": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "domain_claim": {
+      "type": [
+        "object",
+        "null"
+      ],
+      "additionalProperties": false,
+      "required": [
+        "domain_claim_id",
+        "claim_sha256",
+        "status",
+        "readiness_verdict",
+        "approval_state",
+        "binding_source"
+      ],
+      "properties": {
+        "domain_claim_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "claim_sha256": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "status": {
+          "enum": [
+            "draft",
+            "approved"
+          ]
+        },
+        "readiness_verdict": {
+          "enum": [
+            "READY",
+            "RESEARCH_REQUIRED",
+            "BLOCKED"
+          ]
+        },
+        "approval_state": {
+          "enum": [
+            "approved",
+            "unapproved"
+          ]
+        },
+        "binding_source": {
+          "const": "pack_declared_exploration_claim"
+        }
+      }
+    },
+    "plugin_id": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "campaign_id": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "task_family_id": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "scenario_id": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "scenario_version": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "configuration_id": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "mechanical_run_status": {
+      "type": "string"
+    },
+    "seal_status": {
+      "type": "string"
+    },
+    "evidence_gap_ids": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "normalized_event_stream_ref": {
+      "type": "string"
+    },
+    "normalized_event_stream_hash": {
+      "type": "string",
+      "minLength": 64,
+      "maxLength": 64
+    },
+    "artifact_manifest_ref": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "artifact_manifest_hash": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "deterministic_results": {
+      "type": "object"
+    },
+    "redaction": {
+      "type": "object"
+    },
+    "quarantine": {
+      "type": "object"
+    },
+    "dedup": {
+      "type": "object",
+      "required": [
+        "exact_id",
+        "structural_id"
+      ],
+      "properties": {
+        "exact_id": {
+          "type": "string"
+        },
+        "structural_id": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
+    },
+    "lineage_parents": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      }
+    },
+    "refinery_receipt_hash": {
+      "type": "string",
+      "minLength": 64,
+      "maxLength": 64
+    },
+    "refinery_status": {
+      "type": "string",
+      "enum": [
+        "PASSED",
+        "QUARANTINED",
+        "HOLD",
+        "FAILED",
+        "RIGHTS_ASSERTED"
+      ],
+      "description": "PASSED requires the full pipeline disposition. RIGHTS_ASSERTED is granted only by an external rights overlay that binds to this exact bundle; it records rights evidence and never implies assay evidence."
+    },
+    "trajectory_summary": {
+      "type": "object"
+    },
+    "created_at": {
+      "type": "string"
+    },
+    "rights_overlay": {
+      "description": "Outcome of an external rights-overlay evaluation. Absent-by-request when no overlay was supplied ({'requested': false}). A supplied overlay always records that it was requested and whether it could be evaluated, so a refused check is never indistinguishable from one never asked for. Granting sets refinery_status to RIGHTS_ASSERTED and nothing else; it never implies assay evidence.",
+      "type": "object",
+      "required": [
+        "requested"
+      ],
+      "properties": {
+        "requested": {
+          "type": "boolean"
+        },
+        "evaluated": {
+          "type": "boolean"
+        },
+        "granted": {
+          "type": "boolean"
+        },
+        "granted_status": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "enum": [
+            "RIGHTS_ASSERTED",
+            null
+          ]
+        },
+        "reason": {
+          "type": "string"
+        },
+        "ledger_path": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "ledger_sha256": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "ledger_schema": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "bindings_required": {
+          "type": "object"
+        },
+        "matched_entries": {
+          "type": "array"
+        },
+        "rejected_entries": {
+          "type": "array"
+        },
+        "bindings_used": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "minimum_bindings": {
+          "type": "integer"
+        }
+      }
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "evaluation_path": {
+            "const": "three_tier_labyrinth_foundry_refinery"
+          }
+        },
+        "required": [
+          "evaluation_path"
+        ]
+      },
+      "then": {
+        "properties": {
+          "foundry_evaluation": {
+            "type": "object",
+            "required": [
+              "status",
+              "trust"
+            ],
+            "properties": {
+              "status": {
+                "const": "PASS"
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "evaluation_path": {
+            "const": "legacy_direct_labyrinth_to_refinery"
+          }
+        },
+        "required": [
+          "evaluation_path"
+        ]
+      },
+      "then": {
+        "properties": {
+          "foundry_evaluation": {
+            "type": "null"
+          }
+        }
+      }
+    }
+  ],
+  "not": {
+    "anyOf": [
+      {
+        "required": [
+          "training_value"
+        ]
+      },
+      {
+        "required": [
+          "commercial_value"
+        ]
+      },
+      {
+        "required": [
+          "reasoning_quality"
+        ]
+      },
+      {
+        "required": [
+          "gold_tier"
+        ]
+      },
+      {
+        "required": [
+          "topic_quality"
+        ]
+      },
+      {
+        "required": [
+          "dataset_include"
+        ]
+      }
+    ]
+  }
+}

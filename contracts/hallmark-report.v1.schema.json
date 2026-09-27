@@ -1,0 +1,66 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "goldtrace.hallmark.report.v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_id", "product_id", "product_version", "product_hash",
+    "status", "checks", "discrepancies", "semantic_reviews",
+    "reviewer", "created_at", "report_hash"
+  ],
+  "properties": {
+    "schema_id": {"const": "goldtrace.hallmark.report.v1"},
+    "product_id": {"type": "string"},
+    "product_version": {"type": "string"},
+    "product_hash": {"type": "string"},
+    "status": {"type": "string", "enum": ["PASS", "FAIL", "HOLD"]},
+    "checks": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["name", "ok", "detail"],
+        "properties": {
+          "name": {"type": "string", "minLength": 1},
+          "ok": {"type": "boolean"},
+          "detail": {"type": "string"}
+        }
+      }
+    },
+    "discrepancies": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["check", "detail"],
+        "properties": {
+          "check": {"type": "string", "minLength": 1},
+          "detail": {"type": "string"}
+        }
+      }
+    },
+    "semantic_reviews": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["disposition"],
+        "properties": {
+          "disposition": {"type": "string", "enum": ["ACCEPT", "REJECT", "HOLD"]},
+          "source_ingot_id": {"type": ["string", "null"]}
+        }
+      }
+    },
+    "reviewer": {
+      "type": "object",
+      "required": ["type", "mode"],
+      "properties": {
+        "type": {"type": "string"},
+        "mode": {"type": "string", "enum": ["fixture", "production"]},
+        "identity": {"type": "string"}
+      }
+    },
+    "created_at": {"type": "string"},
+    "report_hash": {"type": "string"},
+    "fixture_only": {"type": "boolean"}
+  }
+}

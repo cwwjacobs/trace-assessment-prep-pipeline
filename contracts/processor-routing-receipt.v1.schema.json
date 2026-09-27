@@ -1,0 +1,46 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "gtdataworks.processor-routing-receipt.v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_id", "schema_version", "source", "canonical_model_routes",
+    "selected_route", "existing_canon_modified", "crucible_used",
+    "claim_boundary", "receipt_sha256"
+  ],
+  "properties": {
+    "schema_id": {"const": "gtdataworks.processor-routing-receipt.v1"},
+    "schema_version": {"const": "1.0.0"},
+    "source": {
+      "type": "object", "additionalProperties": false,
+      "required": ["source_family", "source_bundle_hash", "source_manifest_hash", "labyrinth_run_id", "trace_artifact_id"],
+      "properties": {
+        "source_family": {"enum": ["CLI_CODING", "LOCAL_MODEL", "CLOUD_MODEL", "CONTROL_POLICY"]},
+        "source_bundle_hash": {"$ref": "#/$defs/digest"},
+        "source_manifest_hash": {"$ref": "#/$defs/digest"},
+        "labyrinth_run_id": {"type": "string", "minLength": 1},
+        "trace_artifact_id": {"type": "string", "minLength": 1}
+      }
+    },
+    "canonical_model_routes": {
+      "const": [
+        {"source_family": "CLI_CODING", "processor": "GTDataworks-Refinery", "output_class": "CLI_INGOT"},
+        {"source_family": "LOCAL_MODEL", "processor": "GTDataworks-Labyrinth", "output_class": "LM_INGOT"},
+        {"source_family": "CLOUD_MODEL", "processor": "GTDataworks-Cinderfield", "output_class": "CM_INGOT"}
+      ]
+    },
+    "selected_route": {
+      "oneOf": [
+        {"const": {"source_family": "CLI_CODING", "processor": "GTDataworks-Refinery", "output_class": "CLI_INGOT"}},
+        {"const": {"source_family": "LOCAL_MODEL", "processor": "GTDataworks-Labyrinth", "output_class": "LM_INGOT"}},
+        {"const": {"source_family": "CLOUD_MODEL", "processor": "GTDataworks-Cinderfield", "output_class": "CM_INGOT"}},
+        {"const": {"source_family": "CONTROL_POLICY", "processor": "GTDataworks-Refinery", "output_class": "CONTROL_REFERENCE_INGOT", "route_class": "additive_control_baseline", "gold_eligible": false, "sale_ready": false}}
+      ]
+    },
+    "existing_canon_modified": {"const": false},
+    "crucible_used": {"const": false},
+    "claim_boundary": {"type": "string", "minLength": 1},
+    "receipt_sha256": {"$ref": "#/$defs/digest"}
+  },
+  "$defs": {"digest": {"type": "string", "pattern": "^[a-f0-9]{64}$"}}
+}

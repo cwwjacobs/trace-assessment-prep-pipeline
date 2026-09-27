@@ -1,0 +1,42 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "goldtrace.refinery.foundry_trust_policy.v1",
+  "title": "GoldTrace Refinery Foundry Trust Policy",
+  "description": "Operator-selected Foundry issuer key and exact evaluation-pack allowlist. The policy file itself must be regular, non-symlink, current-user-owned and not group/other-writable. The key file is external and no key material is shipped in this document.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_id",
+    "issuer_id",
+    "authentication_method",
+    "key_id",
+    "authentication_key_file",
+    "evaluation_packs"
+  ],
+  "properties": {
+    "schema_id": {"const": "goldtrace.refinery.foundry_trust_policy.v1"},
+    "issuer_id": {"type": "string", "minLength": 1},
+    "authentication_method": {"const": "hmac-sha256"},
+    "key_id": {"type": "string", "minLength": 1},
+    "authentication_key_file": {
+      "description": "Absolute path or path relative to this policy file. The target must be a regular non-symlink file owned by the current user with owner-only permissions.",
+      "type": "string",
+      "minLength": 1
+    },
+    "evaluation_packs": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["pack_id", "pack_version", "pack_hash"],
+        "properties": {
+          "pack_id": {"type": "string", "minLength": 1},
+          "pack_version": {"type": "string", "minLength": 1},
+          "pack_hash": {"type": "string", "pattern": "^[a-f0-9]{64}$"}
+        }
+      }
+    }
+  }
+}

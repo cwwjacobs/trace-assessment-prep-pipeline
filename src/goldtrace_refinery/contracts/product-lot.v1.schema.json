@@ -1,0 +1,27 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "goldtrace.mint.product_lot.v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_id", "product_id", "product_version", "dataset", "eval",
+    "product_spec_hash", "curation_ledger_hash", "source_ingot_ledger_hash",
+    "lineage_manifest_hash", "rights_manifest_hash", "product_hash", "fixture_only"
+  ],
+  "properties": {
+    "schema_id": {"const": "goldtrace.mint.product_lot.v1"},
+    "product_id": {"type": "string"},
+    "product_version": {"type": "string"},
+    "dataset": {"type": "object"},
+    "eval": {"type": "object"},
+    "product_spec_hash": {"type": "string"},
+    "curation_ledger_hash": {"type": "string"},
+    "source_ingot_ledger_hash": {"type": "string"},
+    "lineage_manifest_hash": {"type": "string"},
+    "rights_manifest_hash": {"type": "string"},
+    "product_hash": {"type": "string"},
+    "fixture_only": {"type": "boolean"},
+    "dataset_version": {"type": "string"},
+    "eval_version": {"type": "string"}
+  }
+}

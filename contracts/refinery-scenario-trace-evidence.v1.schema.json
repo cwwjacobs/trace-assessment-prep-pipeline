@@ -1,0 +1,153 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "gtdataworks.refinery.scenario-trace-evidence.v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_id", "schema_version", "projection_policy_id", "source",
+    "scenario", "target", "run", "trajectory", "verifier", "exclusions",
+    "training_admission", "gold_status", "evidence_sha256"
+  ],
+  "properties": {
+    "schema_id": {"const": "gtdataworks.refinery.scenario-trace-evidence.v1"},
+    "schema_version": {"const": "1.0.0"},
+    "projection_policy_id": {"const": "gtdataworks.scenario-trace-recovery-projection.v1"},
+    "source": {
+      "type": "object", "additionalProperties": false,
+      "required": [
+        "labyrinth_run_id", "source_bundle_hash", "source_manifest_hash",
+        "classification", "seal_status", "source_trace_artifact_id",
+        "source_trace_file_sha256", "source_trace_content_sha256",
+        "proof_manifest_sha256", "scenario_trace_index_sha256",
+        "import_package_sha256", "source_family"
+      ],
+      "properties": {
+        "labyrinth_run_id": {"type": "string", "minLength": 1},
+        "source_bundle_hash": {"$ref": "#/$defs/digest"},
+        "source_manifest_hash": {"$ref": "#/$defs/digest"},
+        "classification": {"const": "scenario_trace_import"},
+        "seal_status": {"const": "SEALED_COMPLETE"},
+        "source_trace_artifact_id": {"type": "string", "minLength": 1},
+        "source_trace_file_sha256": {"$ref": "#/$defs/digest"},
+        "source_trace_content_sha256": {"$ref": "#/$defs/digest"},
+        "proof_manifest_sha256": {"$ref": "#/$defs/digest"},
+        "scenario_trace_index_sha256": {"$ref": "#/$defs/digest"},
+        "import_package_sha256": {"$ref": "#/$defs/digest"},
+        "source_family": {"enum": ["CLI_CODING", "LOCAL_MODEL", "CLOUD_MODEL", "CONTROL_POLICY"]}
+      }
+    },
+    "scenario": {
+      "type": "object", "additionalProperties": false,
+      "required": ["artifact_id", "scenario_id", "schema_id", "schema_version", "bounded_hypothesis", "max_steps", "action_budget"],
+      "properties": {
+        "artifact_id": {"type": "string", "minLength": 1},
+        "scenario_id": {"type": "string", "minLength": 1},
+        "schema_id": {"type": "string", "minLength": 1},
+        "schema_version": {"type": "string", "minLength": 1},
+        "bounded_hypothesis": {"type": "string", "minLength": 1},
+        "max_steps": {"type": "integer", "minimum": 1},
+        "action_budget": {"type": "integer", "minimum": 1}
+      }
+    },
+    "target": {
+      "type": "object", "additionalProperties": false,
+      "required": ["artifact_id", "target_id", "model_name", "model_version", "adapter_id", "adapter_version", "source_family"],
+      "properties": {
+        "artifact_id": {"type": "string", "minLength": 1},
+        "target_id": {"type": "string", "minLength": 1},
+        "model_name": {"type": "string", "minLength": 1},
+        "model_version": {"type": "string", "minLength": 1},
+        "adapter_id": {"type": "string", "minLength": 1},
+        "adapter_version": {"type": "string", "minLength": 1},
+        "source_family": {"enum": ["CLI_CODING", "LOCAL_MODEL", "CLOUD_MODEL", "CONTROL_POLICY"]}
+      }
+    },
+    "run": {
+      "type": "object", "additionalProperties": false,
+      "required": ["artifact_id", "run_id", "seed", "status", "source_scenario_run_status", "terminal_reason", "steps_executed", "actions_executed"],
+      "properties": {
+        "artifact_id": {"type": "string", "minLength": 1},
+        "run_id": {"type": "string", "minLength": 1},
+        "seed": {"type": "integer"},
+        "status": {"const": "COMPLETED"},
+        "source_scenario_run_status": {"const": "COMPLETE"},
+        "terminal_reason": {"type": "string", "minLength": 1},
+        "steps_executed": {"type": "integer", "minimum": 1},
+        "actions_executed": {"type": "integer", "minimum": 1}
+      }
+    },
+    "trajectory": {
+      "type": "object", "additionalProperties": false,
+      "required": ["trace_id", "status", "terminal_reason", "failure_and_correction_count", "steps"],
+      "properties": {
+        "trace_id": {"type": "string", "minLength": 1},
+        "status": {"const": "COMPLETE"},
+        "terminal_reason": {"type": "string", "minLength": 1},
+        "failure_and_correction_count": {"type": "integer", "minimum": 0},
+        "steps": {
+          "type": "array", "minItems": 1,
+          "items": {
+            "type": "object", "additionalProperties": false,
+            "required": ["step", "observation_given_to_model", "model_output", "model_action", "environment_result", "failure_or_correction"],
+            "properties": {
+              "step": {"type": "integer", "minimum": 0},
+              "observation_given_to_model": {"type": "object"},
+              "model_output": {"type": "object"},
+              "model_action": {"type": "object"},
+              "environment_result": {"type": "object"},
+              "failure_or_correction": {"enum": ["failure", "correction", "recovery", "none"]}
+            }
+          }
+        }
+      }
+    },
+    "verifier": {
+      "type": "object", "additionalProperties": false,
+      "required": ["artifact_id", "file_sha256", "content_sha256", "status", "trace_quality_gate", "model_self_report_used_as_truth", "required_check_count", "passed_check_count", "checks"],
+      "properties": {
+        "artifact_id": {"type": "string", "minLength": 1},
+        "file_sha256": {"$ref": "#/$defs/digest"},
+        "content_sha256": {"$ref": "#/$defs/digest"},
+        "status": {"const": "PASS"},
+        "trace_quality_gate": {"const": "PASS"},
+        "model_self_report_used_as_truth": {"const": false},
+        "required_check_count": {"type": "integer", "minimum": 1},
+        "passed_check_count": {"type": "integer", "minimum": 1},
+        "checks": {
+          "type": "array", "minItems": 1,
+          "items": {
+            "type": "object", "additionalProperties": false,
+            "required": ["check_id", "category", "status", "description", "independent_of_model_self_report"],
+            "properties": {
+              "check_id": {"type": "string", "minLength": 1},
+              "category": {"enum": ["TRACE_QUALITY", "SCENARIO_OUTCOME"]},
+              "status": {"const": "PASS"},
+              "description": {"type": "string", "minLength": 1},
+              "independent_of_model_self_report": {"const": true}
+            }
+          }
+        }
+      }
+    },
+    "exclusions": {
+      "type": "object", "additionalProperties": false,
+      "required": ["world_truth_snapshots", "hidden_exogenous_event_identities", "hidden_state_paths", "state_deltas", "hidden_chain_of_thought", "model_facing_content_source"],
+      "properties": {
+        "world_truth_snapshots": {"const": "sealed_bundle_only"},
+        "hidden_exogenous_event_identities": {"const": "sealed_bundle_only"},
+        "hidden_state_paths": {"const": "sealed_bundle_only"},
+        "state_deltas": {"const": "sealed_bundle_only"},
+        "hidden_chain_of_thought": {"const": "not_required_and_not_captured"},
+        "model_facing_content_source": {"const": "observation_given_to_model_model_output_model_action_grounded_environment_result_only"}
+      }
+    },
+    "training_admission": {
+      "type": "object", "additionalProperties": false,
+      "required": ["evaluated", "status"],
+      "properties": {"evaluated": {"const": false}, "status": {"const": "NOT_EVALUATED"}}
+    },
+    "gold_status": {"const": "NOT_GOLD"},
+    "evidence_sha256": {"$ref": "#/$defs/digest"}
+  },
+  "$defs": {"digest": {"type": "string", "pattern": "^[a-f0-9]{64}$"}}
+}

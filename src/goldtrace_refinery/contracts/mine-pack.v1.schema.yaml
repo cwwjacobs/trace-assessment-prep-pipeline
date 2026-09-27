@@ -1,0 +1,31 @@
+$schema: "https://json-schema.org/draft/2020-12/schema"
+$title: "Gold Trace Mine Pack (generic)"
+$type: object
+$comment: "Generic Mine run-pack contract above goldentrace.scenario.v1."
+additionalProperties: false
+required: [schema_id, pack_id, pack_version, runtime_profile, domain_claim_id, scenario]
+properties:
+  schema_id:
+    const: "goldtrace.mine.pack.v1"
+  pack_id: {type: string, minLength: 1}
+  pack_version: {type: string, minLength: 1}
+  runtime_profile:
+    type: string
+    enum: [gvisor_owned_isolated]
+  domain_claim_id: {type: string, minLength: 1}
+  plugin_name: {type: string}
+  campaign_id: {type: string}
+  scenario:
+    type: object
+    required: [scenario_id, scenario_version, title]
+    additionalProperties: true
+  policy: {type: object}
+  capture_contract: {type: object}
+  tool_contracts: {}
+  oracle: {}
+  events: {}
+  task_markdown: {type: string}
+  provenance: {type: object}
+  compose: {}
+  fixtures: {type: object}
+  validation_report: {type: object}

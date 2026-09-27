@@ -1,0 +1,58 @@
+$schema: "https://json-schema.org/draft/2020-12/schema"
+$title: "Gold Trace Mint Product Specification"
+$type: object
+additionalProperties: false
+required:
+  - schema_id
+  - product_id
+  - product_version
+  - intended_use
+  - prohibited_use
+  - target_dataset_form
+  - quality_rubric
+  - inclusion_requirements
+  - exclusion_requirements
+  - privacy_requirements
+  - rights_requirements
+  - split_policy
+  - eval_requirements
+  - hallmark_requirements
+  - release_restrictions
+properties:
+  schema_id: {const: "goldtrace.mint.product_spec.v1"}
+  product_id: {type: string, minLength: 1}
+  product_version: {type: string, minLength: 1}
+  intended_use: {type: array, minItems: 1, items: {type: string, minLength: 1}}
+  prohibited_use: {type: array, items: {type: string}}
+  target_dataset_form:
+    type: object
+    required: [record_format, modality]
+    properties:
+      record_format: {type: string}
+      modality: {type: string}
+      notes: {type: string}
+  required_coverage: {type: array, items: {type: string}}
+  desired_source_composition: {type: object}
+  quality_rubric:
+    type: object
+    required: [rubric_id, rubric_version]
+    properties:
+      rubric_id: {type: string}
+      rubric_version: {type: string}
+      rubric_hash: {type: string}
+  inclusion_requirements: {type: array, items: {type: string}}
+  exclusion_requirements: {type: array, items: {type: string}}
+  privacy_requirements: {type: object}
+  rights_requirements: {type: object}
+  split_policy:
+    type: object
+    required: [leakage_group_field, train_ratio, validation_ratio, eval_held_out]
+    properties:
+      leakage_group_field: {type: string}
+      train_ratio: {type: number}
+      validation_ratio: {type: number}
+      eval_held_out: {type: boolean}
+  eval_requirements: {type: object}
+  hallmark_requirements: {type: object}
+  release_restrictions: {type: object}
+  fixture_only: {type: boolean}

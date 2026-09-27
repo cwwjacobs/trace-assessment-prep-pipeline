@@ -1,0 +1,35 @@
+Copyright (c) 2026 Gold Trace Dataworks. All rights reserved.
+
+PROPRIETARY AND CONFIDENTIAL
+
+This software and its accompanying documentation, schemas and contracts ("the
+Software") are proprietary to Gold Trace Dataworks. No licence is granted to any
+person or entity by the act of being given access to it.
+
+Except as expressly permitted in a separate written agreement signed by the
+copyright holder, you may not use, copy, modify, merge, publish, distribute,
+sublicense, sell, reverse engineer, or create derivative works from the
+Software, in whole or in part.
+
+Access to a copy of the Software -- including via a clone, a fork, a shared
+credential, or as a submodule of another repository -- does not grant any of the
+rights above. Possession is not a licence.
+
+This component is one tier of the GTDataworks system and is licensed on the same
+terms as the umbrella repository. Where that repository records public releases
+made under open licences, those releases stand under the terms they were
+published with; this file does not withdraw a licence already granted.
+
+
+NO WARRANTY
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+COPYRIGHT HOLDER BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
+IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
+CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+Verification receipts, evaluation results and provenance records produced by
+the Software describe specific runs on specific inputs. They are evidence about
+those runs and are not a warranty, certification, or fitness guarantee.

@@ -1,0 +1,35 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "goldtrace.mint.curation_decision.v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_id", "decision_id", "product_spec_hash", "ingot_id", "ingot_hash",
+    "rubric_id", "rubric_version", "rubric_hash", "reviewer_type",
+    "decision", "reason_codes", "split_group_id", "reviewed_at", "receipt_hash"
+  ],
+  "properties": {
+    "schema_id": {"const": "goldtrace.mint.curation_decision.v1"},
+    "decision_id": {"type": "string"},
+    "product_spec_hash": {"type": "string"},
+    "ingot_id": {"type": "string"},
+    "ingot_hash": {"type": "string"},
+    "rubric_id": {"type": "string"},
+    "rubric_version": {"type": "string"},
+    "rubric_hash": {"type": "string"},
+    "reviewer_type": {"type": "string", "enum": ["manual", "file", "openai_compatible", "fixture"]},
+    "reviewer_identity": {"type": "string"},
+    "prompt_config_hash": {"type": ["string", "null"]},
+    "decision": {"type": "string", "enum": ["INCLUDE", "EXCLUDE", "HOLD"]},
+    "reason_codes": {"type": "array", "items": {"type": "string"}},
+    "evidence_refs": {"type": "array", "items": {"type": "string"}},
+    "quality_dimensions": {"type": "object"},
+    "confidence": {"type": "number"},
+    "proposed_dataset_role": {"type": ["string", "null"]},
+    "proposed_eval_eligibility": {"type": "boolean"},
+    "split_group_id": {"type": "string"},
+    "reviewed_at": {"type": "string"},
+    "receipt_hash": {"type": "string"},
+    "fixture_only": {"type": "boolean"}
+  }
+}

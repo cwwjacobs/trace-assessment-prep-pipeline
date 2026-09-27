@@ -1,0 +1,127 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "gtdataworks.pack.record.v1",
+  "title": "GTDataworks Pack Record",
+  "description": "One training-data sample with its provenance, authorship and rights. Sits between the per-run ingot and the per-sample training files: it binds upward to the sealed bundle that produced it and downward to the rows a buyer trains on. Rights are carried per record because a single run contains several authorship classes at once.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_id",
+    "record_id",
+    "content_sha256",
+    "authorship_class",
+    "rights_status",
+    "privacy_status",
+    "quality_review",
+    "derivation_method",
+    "split",
+    "split_group_id",
+    "source"
+  ],
+  "properties": {
+    "schema_id": {"const": "gtdataworks.pack.record.v1"},
+    "record_id": {"type": "string", "minLength": 1},
+    "release_version": {"type": ["string", "null"]},
+    "content_sha256": {
+      "description": "Hash of this record's released content, not of its source.",
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+
+    "authorship_class": {
+      "description": "Who authored the bytes. Rights are not uniform across a trace, so this is required. 'mixed' is never admissible: split the record first.",
+      "enum": [
+        "operator_input",
+        "operator_material",
+        "machine_result",
+        "model_prose",
+        "model_reasoning",
+        "model_tool_call",
+        "telemetry",
+        "mixed"
+      ]
+    },
+
+    "source": {
+      "description": "Upward binding. Without this a record cannot be traced to a sealed bundle, which is the link the crop format lost.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["source_hash_sha256"],
+      "properties": {
+        "source_hash_sha256": {
+          "description": "Hash of the excluded source material. Provenance stays verifiable without redistributing the source.",
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "source_bundle_hash": {"type": ["string", "null"], "pattern": "^[a-f0-9]{64}$"},
+        "source_manifest_hash": {"type": ["string", "null"]},
+        "mine_run_id": {"type": ["string", "null"]},
+        "ingot_id": {"type": ["string", "null"]},
+        "foundry_receipt_hash": {"type": ["string", "null"], "pattern": "^[a-f0-9]{64}$"},
+        "evaluation_pack_hash": {"type": ["string", "null"], "pattern": "^[a-f0-9]{64}$"},
+        "source_provider": {"type": ["string", "null"]},
+        "source_model": {"type": ["string", "null"]},
+        "source_plan_tier": {"type": ["string", "null"]},
+        "captured_at": {
+          "description": "Terms change over time, so when a trace was captured is part of the rights fact.",
+          "type": ["string", "null"]
+        },
+        "source_ingot_status": {
+          "description": "refinery_status of the ingot this record derives from.",
+          "type": ["string", "null"]
+        },
+        "source_foundry_status": {
+          "description": "Foundry evaluation status for the source bundle.",
+          "type": ["string", "null"]
+        }
+      }
+    },
+
+    "rights_status": {
+      "description": "Free string, but admissibility is an allow-list in code: anything not explicitly admissible blocks release. UNKNOWN is the default and is never admissible.",
+      "type": "string",
+      "minLength": 1
+    },
+    "license_profile": {"type": ["string", "null"]},
+    "internal_ip_status": {"type": ["string", "null"]},
+    "source_disclosure": {"type": ["string", "null"]},
+    "intended_uses": {"type": "array", "items": {"type": "string"}},
+    "prohibited_claims": {"type": "array", "items": {"type": "string"}},
+    "rights_assertion": {
+      "description": "Recorded when an operator changes rights_status away from UNKNOWN, so the assertion is auditable rather than ambient.",
+      "type": ["object", "null"],
+      "required": ["asserted_by", "asserted_at", "basis"],
+      "additionalProperties": false,
+      "properties": {
+        "asserted_by": {"type": "string", "minLength": 1},
+        "asserted_at": {"type": "string", "minLength": 1},
+        "basis": {"type": "string", "minLength": 1},
+        "assertion_sha256": {"type": ["string", "null"], "pattern": "^[a-f0-9]{64}$"}
+      }
+    },
+
+    "privacy_status": {"type": "string", "minLength": 1},
+    "quality_review": {
+      "description": "Must name automated and manual treatment distinctly. Never reuse a value implying a human read the record when none did.",
+      "type": "string",
+      "minLength": 1
+    },
+    "derivation_method": {"type": "string", "minLength": 1},
+    "transformation_notes": {"type": ["string", "null"]},
+    "evidence_posture": {"type": ["string", "null"]},
+    "known_gaps": {"type": "array", "items": {"type": "string"}},
+
+    "split": {"enum": ["train", "preference", "heldout_eval"]},
+    "split_group_id": {
+      "description": "Leakage group. Near-duplicates and derived families share one, so they move across the boundary together rather than being separated.",
+      "type": "string",
+      "minLength": 1
+    },
+
+    "artifact_type": {"type": ["string", "null"]},
+    "lane": {"type": ["string", "null"]},
+    "language": {"type": ["string", "null"]},
+    "title": {"type": ["string", "null"]},
+    "content": {"description": "The released content itself.", "type": ["string", "object", "array", "null"]}
+  }
+}

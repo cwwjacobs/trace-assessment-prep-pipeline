@@ -1,0 +1,96 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "goldtrace.refinery.ingot-mold-module.v1",
+  "title": "Gold Trace declarative domain Ingot mold module",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_id",
+    "mold_id",
+    "mold_version",
+    "domain",
+    "record_schema_id",
+    "record_schema_filename",
+    "record_schema_sha256",
+    "claim_boundary",
+    "allowed_emission_types",
+    "allowed_case_types",
+    "allowed_execution_profiles",
+    "allowed_assurance_classes",
+    "allowed_provider_api_families",
+    "required_split_group_prefixes",
+    "replay_modes",
+    "minimum_evidence_refs",
+    "minimum_decision_episodes",
+    "allow_provider_application_state",
+    "required_output_reproducibility",
+    "automatic_release"
+  ],
+  "properties": {
+    "schema_id": {"const": "goldtrace.refinery.ingot_mold_module.v1"},
+    "mold_id": {"type": "string", "pattern": "^[a-z0-9][a-z0-9.-]{2,127}$"},
+    "mold_version": {"type": "string", "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$"},
+    "domain": {"type": "string", "pattern": "^[a-z0-9][a-z0-9_-]{2,63}$"},
+    "record_schema_id": {"type": "string", "pattern": "^[a-z0-9][a-z0-9._-]{2,127}$"},
+    "record_schema_filename": {
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9.-]{2,127}\\.schema\\.json$"
+    },
+    "record_schema_sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+    "claim_boundary": {"type": "string", "minLength": 1, "maxLength": 1024},
+    "allowed_emission_types": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 16,
+      "uniqueItems": true,
+      "items": {"type": "string", "pattern": "^[A-Z][A-Z0-9_]{2,63}$"}
+    },
+    "allowed_case_types": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 32,
+      "uniqueItems": true,
+      "items": {"type": "string", "pattern": "^[A-Z][A-Z0-9_]{2,63}$"}
+    },
+    "allowed_execution_profiles": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 16,
+      "uniqueItems": true,
+      "items": {"type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9._/-]{0,127}$"}
+    },
+    "allowed_assurance_classes": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 16,
+      "uniqueItems": true,
+      "items": {"enum": ["PORTABLE_VERIFIED_HARDWARE_PENDING", "SUPPORTED_HOST_VERIFIED"]}
+    },
+    "allowed_provider_api_families": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 8,
+      "uniqueItems": true,
+      "items": {"enum": ["openai.responses.v1", "openai.chat.completions.v1"]}
+    },
+    "required_split_group_prefixes": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 16,
+      "uniqueItems": true,
+      "items": {"enum": ["family:", "fixture:", "mechanic:", "narrative:", "checkpoint:", "source:"]}
+    },
+    "replay_modes": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 3,
+      "uniqueItems": true,
+      "items": {"enum": ["CAPTURED_EXACT", "DETERMINISTIC_POLICY", "FRESH_SEMANTIC_NONDETERMINISTIC"]}
+    },
+    "minimum_evidence_refs": {"type": "integer", "minimum": 1, "maximum": 256},
+    "minimum_decision_episodes": {"type": "integer", "minimum": 1, "maximum": 64},
+    "allow_provider_application_state": {"const": false},
+    "required_output_reproducibility": {"const": "NOT_CLAIMED"},
+    "automatic_release": {"const": false}
+  }
+}

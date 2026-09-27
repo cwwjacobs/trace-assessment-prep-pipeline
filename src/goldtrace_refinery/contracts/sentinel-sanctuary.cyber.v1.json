@@ -1,0 +1,52 @@
+{
+  "schema_id": "goldtrace.refinery.ingot_mold_module.v1",
+  "mold_id": "sentinel-sanctuary.cyber",
+  "mold_version": "1.0.0",
+  "domain": "cyber_defense",
+  "record_schema_id": "sentinel-sanctuary.cyber-record.v1",
+  "record_schema_filename": "sentinel-sanctuary.cyber-record.v1.schema.json",
+  "record_schema_sha256": "bfdde068063d81a3ed7b33e99ee71a138b91622911836781b92500733a19804f",
+  "claim_boundary": "Defensive cyber behavior observed in one authorized, bounded run. This core does not establish global safety, causal attribution, model-output reproducibility, rights clearance, or sale eligibility.",
+  "allowed_emission_types": [
+    "FRESH_RERUN_COMPARISON",
+    "POLICY_COUNTERFACTUAL",
+    "PROPOSAL_DECISION",
+    "RUN_SUMMARY"
+  ],
+  "allowed_case_types": [
+    "BENIGN_OR_EXPECTED",
+    "CONFIRMED_INCIDENT",
+    "EXPOSED_BUT_UNCONFIRMED",
+    "INSUFFICIENT_EVIDENCE",
+    "MIXED"
+  ],
+  "allowed_execution_profiles": [
+    "agent-probe/v0"
+  ],
+  "allowed_assurance_classes": [
+    "PORTABLE_VERIFIED_HARDWARE_PENDING",
+    "SUPPORTED_HOST_VERIFIED"
+  ],
+  "allowed_provider_api_families": [
+    "openai.chat.completions.v1",
+    "openai.responses.v1"
+  ],
+  "required_split_group_prefixes": [
+    "checkpoint:",
+    "family:",
+    "fixture:",
+    "mechanic:",
+    "narrative:",
+    "source:"
+  ],
+  "replay_modes": [
+    "CAPTURED_EXACT",
+    "DETERMINISTIC_POLICY",
+    "FRESH_SEMANTIC_NONDETERMINISTIC"
+  ],
+  "minimum_evidence_refs": 2,
+  "minimum_decision_episodes": 1,
+  "allow_provider_application_state": false,
+  "required_output_reproducibility": "NOT_CLAIMED",
+  "automatic_release": false
+}

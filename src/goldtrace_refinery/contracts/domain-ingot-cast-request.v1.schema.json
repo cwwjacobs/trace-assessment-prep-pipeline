@@ -1,0 +1,79 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "goldtrace.refinery.domain-ingot-cast-request.v1",
+  "title": "Gold Trace deterministic unsigned domain Ingot cast request",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_id",
+    "request_id",
+    "request_sha256",
+    "core_id",
+    "core_sha256",
+    "mold_id",
+    "mold_version",
+    "artifacts",
+    "issuance"
+  ],
+  "$defs": {
+    "sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+    "gate": {"type": "string", "pattern": "^[A-Z][A-Z0-9_]{2,95}$"}
+  },
+  "properties": {
+    "schema_id": {"const": "goldtrace.refinery.domain_ingot_cast_request.v1"},
+    "request_id": {"type": "string", "pattern": "^GTCR-[a-f0-9]{24}$"},
+    "request_sha256": {"$ref": "#/$defs/sha256"},
+    "core_id": {"type": "string", "pattern": "^GTIC-[a-f0-9]{24}$"},
+    "core_sha256": {"$ref": "#/$defs/sha256"},
+    "mold_id": {"type": "string", "minLength": 1, "maxLength": 128},
+    "mold_version": {"type": "string", "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$"},
+    "artifacts": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "source_ingot_file_sha256",
+        "source_refinery_receipt_sha256",
+        "foundry_receipt_sha256",
+        "record_file_sha256",
+        "normalized_record_sha256",
+        "mold_file_sha256",
+        "mold_canonical_sha256",
+        "record_schema_canonical_sha256"
+      ],
+      "properties": {
+        "source_ingot_file_sha256": {"$ref": "#/$defs/sha256"},
+        "source_refinery_receipt_sha256": {"$ref": "#/$defs/sha256"},
+        "foundry_receipt_sha256": {"$ref": "#/$defs/sha256"},
+        "record_file_sha256": {"$ref": "#/$defs/sha256"},
+        "normalized_record_sha256": {"$ref": "#/$defs/sha256"},
+        "mold_file_sha256": {"$ref": "#/$defs/sha256"},
+        "mold_canonical_sha256": {"$ref": "#/$defs/sha256"},
+        "record_schema_canonical_sha256": {"$ref": "#/$defs/sha256"}
+      }
+    },
+    "issuance": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "authentication_status",
+        "hallmark_status",
+        "vault_status",
+        "sale_eligibility",
+        "required_gates"
+      ],
+      "properties": {
+        "authentication_status": {"const": "UNSIGNED"},
+        "hallmark_status": {"const": "NOT_RUN"},
+        "vault_status": {"const": "NOT_SUBMITTED"},
+        "sale_eligibility": {"const": "HOLD"},
+        "required_gates": {
+          "type": "array",
+          "minItems": 4,
+          "maxItems": 32,
+          "uniqueItems": true,
+          "items": {"$ref": "#/$defs/gate"}
+        }
+      }
+    }
+  }
+}

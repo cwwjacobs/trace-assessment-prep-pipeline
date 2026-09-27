@@ -1,0 +1,349 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "gtdataworks.native-operational-telemetry-row.v1",
+  "title": "GTDataworks private native operational telemetry HOLD row",
+  "description": "One privacy-treated structural telemetry row. It contains no source content, tool data, reasoning material, source identifiers, event identifiers, or source/member paths.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_id",
+    "row_id",
+    "provider",
+    "adapter",
+    "adapter_spec_sha256",
+    "record_ordinal",
+    "semantic_kind",
+    "supported_discriminator",
+    "framing_status",
+    "malformed",
+    "malformed_reason",
+    "oversize",
+    "projection_available",
+    "framed_size_bytes",
+    "content_size_bytes",
+    "has_final_lf",
+    "authority",
+    "semantic_status",
+    "source_binding",
+    "governance"
+  ],
+  "$defs": {
+    "digest": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "governance": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "visibility",
+        "rights_status",
+        "disposition",
+        "release_admitted",
+        "training_readiness",
+        "reasoning_policy"
+      ],
+      "properties": {
+        "visibility": {
+          "const": "PRIVATE"
+        },
+        "rights_status": {
+          "const": "UNKNOWN"
+        },
+        "disposition": {
+          "const": "HOLD"
+        },
+        "release_admitted": {
+          "const": false
+        },
+        "training_readiness": {
+          "const": "NOT_TRAINING_READY"
+        },
+        "reasoning_policy": {
+          "const": "EXCLUDE"
+        }
+      }
+    }
+  },
+  "properties": {
+    "schema_id": {
+      "const": "gtdataworks.native-operational-telemetry-row.v1"
+    },
+    "row_id": {
+      "type": "string",
+      "pattern": "^ntelem-[a-f0-9]{64}$"
+    },
+    "provider": {
+      "enum": [
+        "agy",
+        "claude",
+        "codex",
+        "grok",
+        "chatgpt",
+        "claude-export"
+      ]
+    },
+    "adapter": {
+      "enum": [
+        "goldentrace.native-trace.agy-jsonl.v1",
+        "goldentrace.native-trace.claude-session-jsonl.v1",
+        "goldentrace.native-trace.codex-rollout-jsonl.v1",
+        "goldentrace.native-trace.grok-session-jsonl.v1",
+        "goldentrace.native-trace.grok-session-json.v1",
+        "goldentrace.native-trace.chatgpt-conversation-json.v1",
+        "goldentrace.native-trace.claude-conversation-json.v1"
+      ]
+    },
+    "adapter_spec_sha256": {
+      "$ref": "#/$defs/digest"
+    },
+    "record_ordinal": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "semantic_kind": {
+      "enum": [
+        "assistant_message",
+        "user_message",
+        "developer_message",
+        "reasoning",
+        "tool_call",
+        "tool_output",
+        "ancillary_observation",
+        "json_document",
+        "unknown"
+      ]
+    },
+    "supported_discriminator": {
+      "enum": [
+        null,
+        "PLANNER_RESPONSE",
+        "RUN_COMMAND",
+        "USER_INPUT",
+        "VIEW_FILE",
+        "ai-title",
+        "assistant",
+        "attachment",
+        "backend_tool_call",
+        "bridge-session",
+        "compacted",
+        "custom-title",
+        "event_msg",
+        "file-history-delta",
+        "file-history-snapshot",
+        "frame-link",
+        "grok_ancillary",
+        "inter_agent_communication_metadata",
+        "json_document",
+        "last-prompt",
+        "mode",
+        "permission-mode",
+        "queue-operation",
+        "reasoning",
+        "response_item",
+        "session_meta",
+        "system",
+        "tool_completed",
+        "tool_result",
+        "tool_started",
+        "turn_context",
+        "user",
+        "world_state"
+      ]
+    },
+    "framing_status": {
+      "enum": [
+        "valid_lf_terminated",
+        "valid_optional_final_lf_absent",
+        "missing_required_final_lf",
+        "unsupported_cr_framing",
+        "json_single_object"
+      ]
+    },
+    "malformed": {
+      "type": "boolean"
+    },
+    "malformed_reason": {
+      "enum": [
+        null,
+        "missing_required_final_lf",
+        "unsupported_cr_framing",
+        "invalid_json",
+        "non_object_record"
+      ]
+    },
+    "oversize": {
+      "type": "boolean"
+    },
+    "projection_available": {
+      "type": "boolean"
+    },
+    "framed_size_bytes": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "content_size_bytes": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "has_final_lf": {
+      "type": "boolean"
+    },
+    "authority": {
+      "enum": [
+        "MODEL_TESTIMONY",
+        "UNTRUSTED_TARGET_CONTENT"
+      ]
+    },
+    "semantic_status": {
+      "const": "NATIVE_TELEMETRY_ONLY_NOT_EXECUTION_WITNESS"
+    },
+    "source_binding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "source_manifest_sha256",
+        "event_head_sha256",
+        "native_trace_index_sha256",
+        "selected_source_sha256",
+        "archive_sha256",
+        "record_raw_sha256",
+        "record_framed_sha256",
+        "projection_event_sha256"
+      ],
+      "properties": {
+        "source_manifest_sha256": {
+          "$ref": "#/$defs/digest"
+        },
+        "event_head_sha256": {
+          "$ref": "#/$defs/digest"
+        },
+        "native_trace_index_sha256": {
+          "$ref": "#/$defs/digest"
+        },
+        "selected_source_sha256": {
+          "$ref": "#/$defs/digest"
+        },
+        "archive_sha256": {
+          "oneOf": [
+            {
+              "$ref": "#/$defs/digest"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "record_raw_sha256": {
+          "$ref": "#/$defs/digest"
+        },
+        "record_framed_sha256": {
+          "$ref": "#/$defs/digest"
+        },
+        "projection_event_sha256": {
+          "$ref": "#/$defs/digest"
+        }
+      }
+    },
+    "governance": {
+      "$ref": "#/$defs/governance"
+    }
+  },
+  "allOf": [
+    {
+      "oneOf": [
+        {
+          "properties": {
+            "provider": {
+              "const": "agy"
+            },
+            "adapter": {
+              "const": "goldentrace.native-trace.agy-jsonl.v1"
+            },
+            "adapter_spec_sha256": {
+              "const": "fc4f72622ef3bbda1401585fa84d23ef302d82f939f7b0515a6d90d46c054cb3"
+            }
+          }
+        },
+        {
+          "properties": {
+            "provider": {
+              "const": "claude"
+            },
+            "adapter": {
+              "const": "goldentrace.native-trace.claude-session-jsonl.v1"
+            },
+            "adapter_spec_sha256": {
+              "const": "d705e4cb107ca7bfd884d3d471e0ca15fc024dba4ab332d541c02c21230ef527"
+            }
+          }
+        },
+        {
+          "properties": {
+            "provider": {
+              "const": "codex"
+            },
+            "adapter": {
+              "const": "goldentrace.native-trace.codex-rollout-jsonl.v1"
+            },
+            "adapter_spec_sha256": {
+              "const": "a883629c1e29831b713d4ba4a2eb3be8fd1c7ce97e97aa7b9a26c4817b39a6b6"
+            }
+          }
+        },
+        {
+          "properties": {
+            "provider": {
+              "const": "grok"
+            },
+            "adapter": {
+              "const": "goldentrace.native-trace.grok-session-jsonl.v1"
+            },
+            "adapter_spec_sha256": {
+              "const": "bede8fd422e938cb9d53d08f58a9304a583053ed0ecde759a97264d07070bf95"
+            }
+          }
+        },
+        {
+          "properties": {
+            "provider": {
+              "const": "grok"
+            },
+            "adapter": {
+              "const": "goldentrace.native-trace.grok-session-json.v1"
+            },
+            "adapter_spec_sha256": {
+              "const": "57587d01e5090808b5f4cbc07e6d3a1045cf782a86cf38cba16f5b1f802f2670"
+            }
+          }
+        },
+        {
+          "properties": {
+            "provider": {
+              "const": "chatgpt"
+            },
+            "adapter": {
+              "const": "goldentrace.native-trace.chatgpt-conversation-json.v1"
+            },
+            "adapter_spec_sha256": {
+              "const": "dfd78f1ef9e0564f9f0eb48ac8e0076198a05fe32d79e12bbe3fbda3b542c57e"
+            }
+          }
+        },
+        {
+          "properties": {
+            "provider": {
+              "const": "claude-export"
+            },
+            "adapter": {
+              "const": "goldentrace.native-trace.claude-conversation-json.v1"
+            },
+            "adapter_spec_sha256": {
+              "const": "2e11dada76b58f200ef57503fd8eae8190a0021349b5a812bd4d92267b3df95b"
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

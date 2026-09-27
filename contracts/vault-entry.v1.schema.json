@@ -1,0 +1,66 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "goldtrace.vault.entry.v1",
+  "description": "One row of the Vault admission ledger. An admission binds a product lot to the Hallmark report that passed it. A withdrawal is the same record type carrying action=withdraw: the Vault records that something is no longer held rather than deleting the row that said it was, so the ledger stays append-only and the earlier claim remains visible. Fields common to both stay shared; the conditional blocks below are the only place the two actions differ, which is where a future action would be grown.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_id", "product_id", "product_version", "product_lot_hash",
+    "hallmark_report_hash", "hallmark_status", "admitted_at",
+    "storage_location", "rights_status", "sale_eligibility", "admission_receipt_hash"
+  ],
+  "properties": {
+    "schema_id": {"const": "goldtrace.vault.entry.v1"},
+    "product_id": {"type": "string"},
+    "product_version": {"type": "string"},
+    "product_lot_hash": {"type": ["string", "null"]},
+    "hallmark_report_hash": {"type": ["string", "null"]},
+    "hallmark_status": {"type": "string", "enum": ["PASS", "WITHDRAWN"]},
+    "admitted_at": {"type": "string"},
+    "storage_location": {"type": ["string", "null"]},
+    "previous_version": {"type": ["string", "null"]},
+    "supersession": {"type": ["object", "null"]},
+    "rights_status": {"type": "string"},
+    "sale_eligibility": {
+      "type": "string",
+      "enum": ["eligible", "fixture_only", "withdrawn", "held"]
+    },
+    "admission_receipt_hash": {"type": "string"},
+    "fixture_only": {"type": "boolean"},
+    "action": {"type": "string", "enum": ["admit", "withdraw"]},
+    "reason": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Why the product was withdrawn. Required on withdrawal and refused on admission: an admission that needs a reason is not an admission."
+    },
+    "retracted_admission_receipt_hash": {
+      "type": ["string", "null"],
+      "description": "The admission_receipt_hash of the row being withdrawn, binding the withdrawal to the exact claim it retracts. Null when the earlier admission carried no receipt hash to bind."
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "required": ["action"],
+        "properties": {"action": {"const": "withdraw"}}
+      },
+      "then": {
+        "required": ["reason"],
+        "properties": {
+          "hallmark_status": {"const": "WITHDRAWN"},
+          "sale_eligibility": {"const": "withdrawn"}
+        }
+      },
+      "else": {
+        "properties": {
+          "hallmark_status": {"const": "PASS"},
+          "product_lot_hash": {"type": "string"},
+          "hallmark_report_hash": {"type": "string"},
+          "storage_location": {"type": "string"},
+          "reason": false,
+          "retracted_admission_receipt_hash": false
+        }
+      }
+    }
+  ]
+}

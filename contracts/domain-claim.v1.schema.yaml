@@ -1,0 +1,719 @@
+$schema: "https://json-schema.org/draft/2020-12/schema"
+$id: "goldtrace.exploration.domain_claim.v1"
+$title: "Gold Trace Exploration Universal Domain Claim and Mine Run Pack"
+$type: object
+$comment: >
+  Validates a domain claim and run-pack specification through deterministic
+  execution, evidence capture, and mechanical verification. Semantic dataset
+  quality judgments belong to Gold Trace Mint and are intentionally excluded.
+additionalProperties: false
+required:
+  - schema_version
+  - metadata
+  - domain
+  - tools
+  - environment
+  - task_families
+  - verification
+  - evidence
+  - runtime_policy
+  - campaign
+  - run_bundle
+  - teardown
+  - reproducibility
+  - rights_and_privacy
+  - readiness
+
+properties:
+  schema_version:
+    type: string
+    const: "1.0.0"
+
+  metadata:
+    type: object
+    additionalProperties: false
+    required:
+      - status
+      - specification_version
+      - domain_claim_id
+      - plugin_name
+      - plugin_version
+      - target_runtime
+    properties:
+      status:
+        enum: [draft, under_review, approved, rejected, superseded]
+      specification_version:
+        type: string
+        minLength: 1
+      domain_claim_id:
+        type: string
+        minLength: 1
+      plugin_name:
+        type: string
+        minLength: 1
+      plugin_version:
+        type: string
+        minLength: 1
+      prepared_by:
+        type: string
+      prepared_at:
+        type: string
+      target_runtime:
+        type: object
+        additionalProperties: false
+        required: [name, version_constraint]
+        properties:
+          name:
+            type: string
+            minLength: 1
+          version_constraint:
+            type: string
+
+  domain:
+    type: object
+    additionalProperties: false
+    required:
+      - name
+      - summary
+      - included_work
+      - excluded_work
+      - value_hypothesis
+      - claim_statement
+    properties:
+      name:
+        type: string
+        minLength: 1
+      summary:
+        type: string
+        minLength: 1
+      included_work:
+        type: array
+        minItems: 1
+        items: {type: string, minLength: 1}
+      excluded_work:
+        type: array
+        items: {type: string, minLength: 1}
+      ambiguous_boundaries:
+        type: array
+        items:
+          type: object
+          additionalProperties: false
+          required: [case, included, rule]
+          properties:
+            case: {type: string, minLength: 1}
+            included: {type: string, enum: ["yes", "no", "conditional"]}
+            rule: {type: string, minLength: 1}
+      value_hypothesis:
+        type: string
+        minLength: 1
+      expected_downstream_uses:
+        type: array
+        items: {type: string, minLength: 1}
+      expected_users:
+        type: array
+        items: {type: string, minLength: 1}
+      claim_statement:
+        type: string
+        minLength: 1
+      limitations:
+        type: array
+        items: {type: string, minLength: 1}
+
+  knowledge_model:
+    type: object
+    additionalProperties: false
+    properties:
+      entities: {type: array, items: {$ref: "#/$defs/namedDefinition"}}
+      relationships: {type: array, items: {type: object}}
+      states: {type: array, items: {$ref: "#/$defs/namedDefinition"}}
+      actions: {type: array, items: {type: object}}
+      terminology: {type: array, items: {type: object}}
+
+  actors:
+    type: object
+    additionalProperties: false
+    properties:
+      agent_role:
+        type: object
+        additionalProperties: false
+        properties:
+          name: {type: string}
+          expected_prior_knowledge: {type: array, items: {type: string}}
+          must_discover: {type: array, items: {type: string}}
+          withheld_information: {type: array, items: {type: string}}
+      other_actors:
+        type: array
+        items: {type: object}
+      authority:
+        type: object
+        additionalProperties: false
+        properties:
+          allowed: {type: array, items: {type: string}}
+          prohibited: {type: array, items: {type: string}}
+          approval_required: {type: array, items: {type: string}}
+
+  tools:
+    type: array
+    minItems: 1
+    items:
+      $ref: "#/$defs/tool"
+
+  environment:
+    type: object
+    additionalProperties: false
+    required:
+      - execution_type
+      - resources
+      - filesystem
+      - network
+    properties:
+      execution_type:
+        enum: [container, vm, microvm, remote_sandbox, other]
+      base_image: {type: string}
+      architecture: {type: string}
+      resources:
+        type: object
+        additionalProperties: false
+        required: [max_runtime_seconds]
+        properties:
+          cpu: {type: string}
+          memory: {type: string}
+          gpu: {type: string}
+          storage: {type: string}
+          max_runtime_seconds: {type: integer, minimum: 1}
+      software:
+        type: array
+        items: {type: object}
+      services:
+        type: array
+        items: {type: object}
+      filesystem:
+        type: object
+        additionalProperties: false
+        required: [read_only_paths, writable_paths, ephemeral_paths]
+        properties:
+          root: {type: string}
+          read_only_paths: {type: array, items: {type: string}}
+          writable_paths: {type: array, items: {type: string}}
+          ephemeral_paths: {type: array, items: {type: string}}
+          input_paths: {type: array, items: {type: string}}
+          output_paths: {type: array, items: {type: string}}
+          log_paths: {type: array, items: {type: string}}
+          before_after_capture_paths: {type: array, items: {type: string}}
+      network:
+        type: object
+        additionalProperties: false
+        required: [mode]
+        properties:
+          mode:
+            enum: [none, internal_only, allowlisted_external, unrestricted_inside_boundary]
+          allowed_destinations:
+            type: array
+            items: {type: object}
+          blocked_destinations:
+            type: array
+            items: {type: string}
+          dns_policy: {type: string}
+          evidence_required:
+            type: array
+            items: {type: string}
+      credentials:
+        type: array
+        items: {type: object}
+      secrets_excluded_from_evidence:
+        type: array
+        items: {type: string}
+      redaction_patterns:
+        type: array
+        items: {type: string}
+
+  sources:
+    type: object
+    additionalProperties: false
+    properties:
+      materials: {type: array, items: {type: object}}
+      fixtures: {type: array, items: {type: object}}
+      initial_state_requirements: {type: array, items: {type: string}}
+      hidden_verifier_material: {type: array, items: {type: string}}
+
+  task_families:
+    type: array
+    minItems: 1
+    items:
+      $ref: "#/$defs/taskFamily"
+
+  scenarios:
+    type: array
+    items:
+      $ref: "#/$defs/scenario"
+
+  verification:
+    type: object
+    additionalProperties: false
+    required:
+      - objectives
+      - verifiers
+      - allowed_statuses
+    properties:
+      objectives:
+        type: array
+        minItems: 1
+        items: {type: object}
+      verifiers:
+        type: array
+        minItems: 1
+        items:
+          $ref: "#/$defs/verifier"
+      disagreement_precedence:
+        type: array
+        items: {type: string}
+      allowed_statuses:
+        type: array
+        uniqueItems: true
+        items:
+          enum:
+            - COMPLETION_CONDITION_MET
+            - COMPLETION_CONDITION_NOT_MET
+            - POLICY_TERMINATED
+            - INFRASTRUCTURE_FAILURE
+            - VERIFIER_FAILURE
+            - EVIDENCE_INCOMPLETE
+            - TIMEOUT
+            - INDETERMINATE
+
+  evidence:
+    type: object
+    additionalProperties: false
+    required:
+      - required_channels
+      - event_schema
+      - evidence_gap_schema
+    properties:
+      required_channels:
+        type: array
+        minItems: 1
+        uniqueItems: true
+        items:
+          enum:
+            - agent_messages
+            - tool_calls
+            - tool_outputs
+            - process_activity
+            - filesystem_changes
+            - network_activity
+            - application_logs
+            - database_changes
+            - screenshots
+            - test_results
+            - resource_usage
+            - environment_state
+            - generated_artifacts
+      event_schema:
+        type: object
+        additionalProperties: false
+        required: [required_fields]
+        properties:
+          required_fields:
+            type: array
+            minItems: 1
+            uniqueItems: true
+            items: {type: string}
+      before_state:
+        type: array
+        items: {type: string}
+      after_state:
+        type: array
+        items: {type: string}
+      evidence_gap_schema:
+        type: object
+        additionalProperties: false
+        required: [required_fields]
+        properties:
+          required_fields:
+            type: array
+            contains: {const: channel}
+            items: {type: string}
+
+  checkpoints:
+    type: object
+
+  runtime_policy:
+    type: object
+    additionalProperties: false
+    required:
+      - allowed_effects
+      - prohibited_effects
+      - limits
+      - fail_closed_start_conditions
+      - immediate_stop_conditions
+    properties:
+      allowed_effects:
+        type: array
+        items: {type: string}
+      prohibited_effects:
+        type: array
+        items: {type: string}
+      limits:
+        type: object
+        additionalProperties: false
+        required: [runtime_seconds, tool_calls, model_turns]
+        properties:
+          runtime_seconds: {type: integer, minimum: 1}
+          cpu: {type: string}
+          memory: {type: string}
+          storage: {type: string}
+          network: {type: string}
+          tool_calls: {type: integer, minimum: 1}
+          model_turns: {type: integer, minimum: 1}
+      fail_closed_start_conditions:
+        type: array
+        minItems: 1
+        items: {type: string}
+      immediate_stop_conditions:
+        type: array
+        minItems: 1
+        items: {type: string}
+
+  agent:
+    type: object
+
+  campaign:
+    type: object
+    additionalProperties: false
+    required:
+      - campaign_id
+      - objective
+      - version
+      - run_plan
+      - ordering
+      - stopping_conditions
+    properties:
+      campaign_id: {type: string, minLength: 1}
+      objective: {type: string, minLength: 1}
+      version: {type: string, minLength: 1}
+      run_plan:
+        type: array
+        minItems: 1
+        items: {type: object}
+      ordering:
+        type: object
+        additionalProperties: false
+        required: [mode, rule]
+        properties:
+          mode:
+            enum: [fixed, randomized, stratified, adaptive, other]
+          rule: {type: string}
+      stopping_conditions:
+        type: array
+        minItems: 1
+        items: {type: string}
+      defect_classification_rules:
+        type: array
+        items: {type: string}
+
+  run_bundle:
+    type: object
+    additionalProperties: false
+    required:
+      - format
+      - required_paths
+      - required_metadata
+      - acceptance_checks
+    properties:
+      format:
+        enum: [directory, tar, tar.gz, zip]
+      required_paths:
+        type: array
+        minItems: 1
+        uniqueItems: true
+        items: {type: string}
+      required_metadata:
+        type: array
+        minItems: 1
+        uniqueItems: true
+        items: {type: string}
+      acceptance_checks:
+        type: array
+        minItems: 1
+        items: {type: string}
+
+  teardown:
+    type: object
+    additionalProperties: false
+    required:
+      - required_actions
+      - verifier
+      - reset_verification
+    properties:
+      required_actions:
+        type: array
+        minItems: 1
+        items: {type: string}
+      verifier:
+        type: object
+        additionalProperties: false
+        required: [invocation, pass_condition, fail_condition]
+        properties:
+          invocation: {type: string, minLength: 1}
+          pass_condition: {type: string, minLength: 1}
+          fail_condition: {type: string, minLength: 1}
+      reset_verification:
+        type: string
+        minLength: 1
+
+  reproducibility:
+    type: object
+    additionalProperties: false
+    required:
+      - pinned_inputs
+      - reproduction_command
+      - nondeterminism_sources
+    properties:
+      pinned_inputs:
+        type: array
+        minItems: 1
+        items: {type: object}
+      reproduction_command:
+        type: string
+        minLength: 1
+      nondeterminism_sources:
+        type: array
+        items: {type: object}
+
+  rights_and_privacy:
+    type: object
+    additionalProperties: false
+    required:
+      - classifications
+      - rights
+      - required_exclusions
+      - retention_policy
+    properties:
+      classifications:
+        type: array
+        items: {type: object}
+      rights:
+        type: array
+        minItems: 1
+        items: {type: object}
+      required_exclusions:
+        type: array
+        items: {type: string}
+      retention_policy:
+        type: string
+        minLength: 1
+
+  known_failure_modes:
+    type: array
+    items: {type: object}
+
+  readiness:
+    type: object
+    additionalProperties: false
+    required: [checklist, verdict, blocking_issues, approval]
+    properties:
+      checklist:
+        type: object
+        additionalProperties: false
+        required:
+          - domain_boundaries_explicit
+          - task_family_complete
+          - tools_and_environment_pinned
+          - policy_enforceable
+          - deterministic_verification_defined
+          - evidence_channels_defined
+          - evidence_gaps_explicit
+          - teardown_verifiable
+          - rights_documented
+          - run_bundle_contract_complete
+          - no_semantic_grading_in_mine_or_refinery
+        properties:
+          domain_boundaries_explicit: {type: boolean}
+          task_family_complete: {type: boolean}
+          tools_and_environment_pinned: {type: boolean}
+          policy_enforceable: {type: boolean}
+          deterministic_verification_defined: {type: boolean}
+          evidence_channels_defined: {type: boolean}
+          evidence_gaps_explicit: {type: boolean}
+          teardown_verifiable: {type: boolean}
+          rights_documented: {type: boolean}
+          run_bundle_contract_complete: {type: boolean}
+          no_semantic_grading_in_mine_or_refinery: {type: boolean}
+      verdict:
+        enum:
+          - READY_FOR_PACK_IMPLEMENTATION
+          - RESEARCH_REQUIRED
+          - VERIFIER_DESIGN_REQUIRED
+          - ENVIRONMENT_WORK_REQUIRED
+          - RIGHTS_REVIEW_REQUIRED
+          - REJECTED
+      blocking_issues:
+        type: array
+        items: {type: object}
+      approval:
+        type: object
+        additionalProperties: false
+        properties:
+          approved_by: {type: string}
+          approved_at: {type: string}
+          approved_claim_version: {type: string}
+          notes: {type: string}
+
+$defs:
+  namedDefinition:
+    type: object
+    additionalProperties: true
+    required: [name, definition]
+    properties:
+      name: {type: string, minLength: 1}
+      definition: {type: string, minLength: 1}
+
+  tool:
+    type: object
+    additionalProperties: false
+    required:
+      - tool_id
+      - name
+      - version
+      - purpose
+      - interface_type
+      - inputs
+      - outputs
+      - side_effects
+      - allowed_uses
+      - forbidden_uses
+      - evidence_required
+    properties:
+      tool_id: {type: string, minLength: 1}
+      name: {type: string, minLength: 1}
+      version: {type: string, minLength: 1}
+      purpose: {type: string, minLength: 1}
+      interface_type:
+        enum: [cli, api, mcp, gui, library, other]
+      implementation_location: {type: string}
+      inputs: {type: array, items: {type: object}}
+      outputs: {type: array, items: {type: object}}
+      side_effects:
+        type: array
+        items: {type: string}
+      error_behavior:
+        type: array
+        items: {type: object}
+      allowed_uses:
+        type: array
+        items: {type: string}
+      forbidden_uses:
+        type: array
+        items: {type: string}
+      evidence_required:
+        type: array
+        minItems: 1
+        items: {type: string}
+
+  taskFamily:
+    type: object
+    additionalProperties: false
+    required:
+      - task_family_id
+      - name
+      - description
+      - capability_exercised
+      - starting_state
+      - task_template
+      - variables
+      - permitted_solution_space
+      - forbidden_solution_space
+      - expected_artifacts
+      - completion_conditions
+      - failure_conditions
+      - immediate_termination_conditions
+    properties:
+      task_family_id: {type: string, minLength: 1}
+      name: {type: string, minLength: 1}
+      description: {type: string, minLength: 1}
+      capability_exercised: {type: string, minLength: 1}
+      difficulty_range: {type: string}
+      starting_state: {type: string, minLength: 1}
+      task_template: {type: string, minLength: 1}
+      variables: {type: array, items: {type: object}}
+      permitted_solution_space: {type: string, minLength: 1}
+      forbidden_solution_space:
+        type: array
+        items: {type: string}
+      expected_artifacts:
+        type: array
+        items: {type: object}
+      completion_conditions:
+        type: array
+        minItems: 1
+        items: {type: string}
+      failure_conditions:
+        type: array
+        minItems: 1
+        items: {type: string}
+      immediate_termination_conditions:
+        type: array
+        items: {type: string}
+
+  scenario:
+    type: object
+    additionalProperties: false
+    required:
+      - scenario_id
+      - task_family_id
+      - version
+      - inputs
+      - initial_snapshot
+      - deterministic_checks
+    properties:
+      scenario_id: {type: string, minLength: 1}
+      task_family_id: {type: string, minLength: 1}
+      version: {type: string, minLength: 1}
+      random_seed: {}
+      inputs: {type: object}
+      initial_snapshot:
+        type: object
+        additionalProperties: false
+        required: [identifier, expected_hash, reset_procedure]
+        properties:
+          identifier: {type: string, minLength: 1}
+          expected_hash: {type: string, minLength: 1}
+          reset_procedure: {type: string, minLength: 1}
+      constraints:
+        type: array
+        items: {type: string}
+      deterministic_checks:
+        type: array
+        minItems: 1
+        items: {type: string}
+
+  verifier:
+    type: object
+    additionalProperties: false
+    required:
+      - verifier_id
+      - name
+      - version
+      - type
+      - invocation
+      - inputs
+      - outputs
+      - pass_rule
+      - fail_rule
+      - indeterminate_rule
+    properties:
+      verifier_id: {type: string, minLength: 1}
+      name: {type: string, minLength: 1}
+      version: {type: string, minLength: 1}
+      type:
+        enum: [script, test_suite, schema_validator, hash_comparison, query, other]
+      invocation: {type: string, minLength: 1}
+      inputs: {type: array, items: {type: string}}
+      outputs: {type: array, items: {type: string}}
+      exit_code_contract: {type: string}
+      pass_rule: {type: string, minLength: 1}
+      fail_rule: {type: string, minLength: 1}
+      indeterminate_rule: {type: string, minLength: 1}
+      known_limitations:
+        type: array
+        items: {type: string}

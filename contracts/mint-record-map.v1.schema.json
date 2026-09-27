@@ -1,0 +1,125 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "goldtrace.mint.record_map.v1",
+  "title": "Mint provenance record map entry",
+  "description": "Binds one exact rendered dataset row to the ingot, curation decision, and evidence events it came from. Model-facing rows are deliberately provenance-free; this ledger is the independently hashed carrier of source identity, so every field a verifier reconciles against must be present and typed.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_id",
+    "record_id",
+    "recipe_id",
+    "split",
+    "dataset_path",
+    "row_index",
+    "rendered_row_sha256",
+    "source_ingot_id",
+    "source_ingot_hash",
+    "source_bundle_hash",
+    "mine_run_id",
+    "split_group_id",
+    "curation_decision_id",
+    "session_id",
+    "turn_id",
+    "user_input_event_ids",
+    "agent_message_event_ids",
+    "request_event_ids",
+    "result_event_ids",
+    "effect_event_ids",
+    "source_interactive_evidence_sha256",
+    "source_index_sha256",
+    "normalized_tool_calls",
+    "extractor_metadata"
+  ],
+  "$defs": {
+    "sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "nullable_sha256": {
+      "oneOf": [
+        {"$ref": "#/$defs/sha256"},
+        {"type": "null"}
+      ]
+    },
+    "identifier": {
+      "type": "string",
+      "minLength": 1
+    },
+    "nullable_identifier": {
+      "oneOf": [
+        {"$ref": "#/$defs/identifier"},
+        {"type": "null"}
+      ]
+    },
+    "event_id_list": {
+      "type": "array",
+      "items": {"$ref": "#/$defs/identifier"}
+    }
+  },
+  "properties": {
+    "schema_id": {"const": "goldtrace.mint.record_map.v1"},
+    "record_id": {"$ref": "#/$defs/identifier"},
+    "recipe_id": {"$ref": "#/$defs/identifier"},
+    "split": {
+      "type": "string",
+      "enum": ["train", "validation"]
+    },
+    "dataset_path": {
+      "type": "string",
+      "enum": ["dataset/train.jsonl", "dataset/validation.jsonl"]
+    },
+    "row_index": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "rendered_row_sha256": {"$ref": "#/$defs/sha256"},
+    "source_ingot_id": {"$ref": "#/$defs/identifier"},
+    "source_ingot_hash": {"$ref": "#/$defs/sha256"},
+    "source_bundle_hash": {"$ref": "#/$defs/sha256"},
+    "mine_run_id": {"$ref": "#/$defs/nullable_identifier"},
+    "split_group_id": {"$ref": "#/$defs/identifier"},
+    "curation_decision_id": {"$ref": "#/$defs/identifier"},
+    "session_id": {"$ref": "#/$defs/nullable_identifier"},
+    "turn_id": {"$ref": "#/$defs/nullable_identifier"},
+    "user_input_event_ids": {"$ref": "#/$defs/event_id_list"},
+    "agent_message_event_ids": {"$ref": "#/$defs/event_id_list"},
+    "request_event_ids": {"$ref": "#/$defs/event_id_list"},
+    "result_event_ids": {"$ref": "#/$defs/event_id_list"},
+    "effect_event_ids": {"$ref": "#/$defs/event_id_list"},
+    "source_interactive_evidence_sha256": {"$ref": "#/$defs/nullable_sha256"},
+    "source_index_sha256": {"$ref": "#/$defs/nullable_sha256"},
+    "normalized_tool_calls": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "normalized_call_id",
+          "native_id_field",
+          "native_call_id",
+          "request_event_id",
+          "result_event_id",
+          "effect_event_ids",
+          "result_state"
+        ],
+        "properties": {
+          "normalized_call_id": {"$ref": "#/$defs/identifier"},
+          "native_id_field": {"$ref": "#/$defs/identifier"},
+          "native_call_id": {"$ref": "#/$defs/identifier"},
+          "request_event_id": {"$ref": "#/$defs/identifier"},
+          "result_event_id": {"$ref": "#/$defs/nullable_identifier"},
+          "effect_event_ids": {"$ref": "#/$defs/event_id_list"},
+          "result_state": {
+            "type": "string",
+            "enum": ["RESULT_OBSERVED", "SUCCEEDED", "FAILED"]
+          }
+        }
+      }
+    },
+    "extractor_metadata": {
+      "type": "object",
+      "description": "Recipe-specific fields the extractor produced that are not model-visible top-level fields. Free-form by design; its contents are bound by the record map hash, not by this contract."
+    }
+  }
+}

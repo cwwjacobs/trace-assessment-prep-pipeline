@@ -1,0 +1,62 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "gtdataworks.scenario_card_registry.v1",
+  "title": "GTDataworks Scenario Card Registry",
+  "description": "Operator pre-registration of scenario cards (hashes) across Labyrinth, Foundry and Vault. Reject-heavy: an unregistered or mismatched card fails smelt/mint. product_pack_id is fixed pre-run so ore digests can change without renaming the product package.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_id", "cards"],
+  "properties": {
+    "schema_id": {"const": "gtdataworks.scenario_card_registry.v1"},
+    "registry_id": {"type": ["string", "null"]},
+    "updated_at": {"type": ["string", "null"]},
+    "cards": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "scenario_id",
+          "scenario_version",
+          "card_hash",
+          "product_pack_id",
+          "tiers"
+        ],
+        "properties": {
+          "scenario_id": {"type": "string", "minLength": 1},
+          "scenario_version": {"type": "string", "minLength": 1},
+          "card_hash": {
+            "description": "Canonical card identity: Labyrinth source_archive_sha256 / sealed run scenario.pack_sha256.",
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          },
+          "tree_sha256": {
+            "type": ["string", "null"],
+            "pattern": "^[a-f0-9]{64}$"
+          },
+          "product_pack_id": {
+            "description": "Stable product package id known before any dig. Ore changes do not rename this.",
+            "type": "string",
+            "minLength": 1
+          },
+          "admission_pack": {
+            "description": "Foundry evaluation pack id expected for this card (identity only; hash still pinned in foundry-trust).",
+            "type": ["string", "null"]
+          },
+          "tiers": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["labyrinth", "foundry", "vault"],
+            "properties": {
+              "labyrinth": {"type": "boolean"},
+              "foundry": {"type": "boolean"},
+              "vault": {"type": "boolean"}
+            }
+          },
+          "registered_at": {"type": ["string", "null"]},
+          "notes": {"type": ["string", "null"]}
+        }
+      }
+    }
+  }
+}

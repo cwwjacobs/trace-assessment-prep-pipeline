@@ -1,0 +1,62 @@
+[build-system]
+requires = ["setuptools>=75"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "goldtrace-refinery"
+version = "1.0.0"
+description = "GTDataworks Refinery (Tier 3) - evidence-bound productization, privacy sanitizer and ingot casting"
+readme = "README.md"
+requires-python = ">=3.10"
+license = { file = "LICENSE" }
+# Proprietary: this classifier makes PyPI reject an upload outright, so an
+# accidental `twine upload` cannot publish a private component.
+classifiers = ["Private :: Do Not Upload"]
+# jsonschema is imported by goldtrace_refinery.ingot_schema on every cast and
+# is therefore a base runtime requirement, not an optional one.
+dependencies = [
+  "jsonschema>=4.23,<5",
+]
+
+[project.optional-dependencies]
+# Parquet/Arrow export in goldtrace_mint.factory.packager. Heavy; opt in.
+parquet = [
+  "pyarrow>=15",
+]
+# Zstandard compression in goldtrace_mint.factory.packager. Opt in.
+zstd = [
+  "zstandard>=0.22",
+]
+dev = [
+  "pytest>=8.0",
+  # test_packager.py exercises the Parquet/Arrow export paths directly.
+  "pyarrow>=15",
+]
+# Everything an operator needs to exercise the documented export paths.
+all = [
+  "goldtrace-refinery[parquet,zstd]",
+]
+
+[project.scripts]
+goldtrace-refinery = "goldtrace_refinery.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+# Contracts must travel with the wheel; repository-relative lookup does not
+# exist once the package is installed outside a checkout.
+goldtrace_refinery = ["contracts/*.json", "contracts/*.yaml"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+# goldtrace_hallmark and goldtrace_vault now live under src/ so packages.find
+# discovers them and they ship in the wheel. A component that gates the product
+# but cannot be installed gets impersonated by a script instead: that is how
+# hand-written hallmark reports and hand-written vault entries both happened.
+pythonpath = ["src"]
+markers = [
+  "unit: fast in-process test with no external dependencies",
+  "fixture_e2e: end-to-end exercise over a fixture product lot",
+]
+addopts = "-ra"

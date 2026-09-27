@@ -1,0 +1,132 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "goldtrace.refinery.domain-ingot-core.v1",
+  "title": "Gold Trace deterministic domain Ingot core",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_id",
+    "core_id",
+    "core_sha256",
+    "canonicalization",
+    "mold",
+    "source",
+    "record",
+    "claims"
+  ],
+  "$defs": {
+    "sha256": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "identifier": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,191}$"
+    }
+  },
+  "properties": {
+    "schema_id": {"const": "goldtrace.refinery.domain_ingot_core.v1"},
+    "core_id": {"type": "string", "pattern": "^GTIC-[a-f0-9]{24}$"},
+    "core_sha256": {"$ref": "#/$defs/sha256"},
+    "canonicalization": {"const": "goldtrace.canonical-json.v1"},
+    "mold": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "mold_id",
+        "mold_version",
+        "mold_sha256",
+        "domain",
+        "record_schema_id",
+        "record_schema_sha256"
+      ],
+      "properties": {
+        "mold_id": {"$ref": "#/$defs/identifier"},
+        "mold_version": {"type": "string", "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$"},
+        "mold_sha256": {"$ref": "#/$defs/sha256"},
+        "domain": {"$ref": "#/$defs/identifier"},
+        "record_schema_id": {"$ref": "#/$defs/identifier"},
+        "record_schema_sha256": {"$ref": "#/$defs/sha256"}
+      }
+    },
+    "source": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "source_ingot_id",
+        "source_bundle_sha256",
+        "source_manifest_sha256",
+        "normalized_event_stream_sha256",
+        "scenario_id",
+        "scenario_version",
+        "mine_run_id",
+        "source_seal_status",
+        "evaluation_path",
+        "foundry_status",
+        "evaluation_pack_id",
+        "evaluation_pack_version",
+        "evaluation_pack_sha256",
+        "foundry_code_sha256",
+        "foundry_decision_deterministic",
+        "foundry_issuer_id",
+        "foundry_key_id",
+        "foundry_authentication",
+        "foundry_evidence_gap_ids",
+        "refinery_status"
+      ],
+      "properties": {
+        "source_ingot_id": {"$ref": "#/$defs/identifier"},
+        "source_bundle_sha256": {"$ref": "#/$defs/sha256"},
+        "source_manifest_sha256": {"$ref": "#/$defs/sha256"},
+        "normalized_event_stream_sha256": {"$ref": "#/$defs/sha256"},
+        "scenario_id": {"$ref": "#/$defs/identifier"},
+        "scenario_version": {"$ref": "#/$defs/identifier"},
+        "mine_run_id": {
+          "type": ["string", "null"],
+          "minLength": 1,
+          "maxLength": 192
+        },
+        "source_seal_status": {"enum": ["SEALED", "SEALED_WITH_GAPS"]},
+        "evaluation_path": {"const": "three_tier_labyrinth_foundry_refinery"},
+        "foundry_status": {"const": "PASS"},
+        "evaluation_pack_id": {"$ref": "#/$defs/identifier"},
+        "evaluation_pack_version": {"$ref": "#/$defs/identifier"},
+        "evaluation_pack_sha256": {"$ref": "#/$defs/sha256"},
+        "foundry_code_sha256": {"$ref": "#/$defs/sha256"},
+        "foundry_decision_deterministic": {"const": true},
+        "foundry_issuer_id": {"$ref": "#/$defs/identifier"},
+        "foundry_key_id": {"$ref": "#/$defs/identifier"},
+        "foundry_authentication": {"enum": ["hmac-sha256", "ed25519"]},
+        "foundry_evidence_gap_ids": {
+          "type": "array",
+          "maxItems": 128,
+          "uniqueItems": true,
+          "items": {"$ref": "#/$defs/identifier"}
+        },
+        "refinery_status": {"const": "PASSED"}
+      }
+    },
+    "record": {
+      "description": "Validated against the exact record schema bound by mold.record_schema_sha256 before this envelope is accepted.",
+      "type": "object"
+    },
+    "claims": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "execution_scope",
+        "model_output_determinism",
+        "provider_disclosure_laundered",
+        "automatic_promotion",
+        "release_posture"
+      ],
+      "properties": {
+        "execution_scope": {"const": "OBSERVED_RUN_ONLY"},
+        "model_output_determinism": {"const": "NOT_CLAIMED"},
+        "provider_disclosure_laundered": {"const": false},
+        "automatic_promotion": {"const": false},
+        "release_posture": {"const": "HOLD"}
+      }
+    }
+  }
+}

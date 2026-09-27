@@ -1,0 +1,196 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "goldtrace.refinery.interactive_evidence.v1",
+  "title": "Gold Trace Refinery privacy-treated interactive evidence",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_id",
+    "source",
+    "mechanical_session_status",
+    "evidence_gap_ids",
+    "privacy",
+    "turns"
+  ],
+  "properties": {
+    "schema_id": {"const": "goldtrace.refinery.interactive_evidence.v1"},
+    "source": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "run_id",
+        "classification",
+        "source_bundle_hash",
+        "source_manifest_hash",
+        "source_index_path",
+        "source_index_sha256",
+        "source_event_stream_head_sha256"
+      ],
+      "properties": {
+        "run_id": {"type": "string", "minLength": 1},
+        "classification": {"const": "live_interactive"},
+        "source_bundle_hash": {"$ref": "#/$defs/sha256"},
+        "source_manifest_hash": {"$ref": "#/$defs/sha256"},
+        "source_index_path": {"const": "interactive-evidence-index.json"},
+        "source_index_sha256": {"$ref": "#/$defs/sha256"},
+        "source_event_stream_head_sha256": {"$ref": "#/$defs/sha256"}
+      }
+    },
+    "mechanical_session_status": {
+      "enum": ["COMPLETED", "FAILED", "INTERRUPTED"]
+    },
+    "evidence_gap_ids": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {"type": "string", "minLength": 1}
+    },
+    "privacy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "content_source",
+        "content_source_sha256",
+        "findings_count",
+        "large_content_policy"
+      ],
+      "properties": {
+        "content_source": {"const": "normalized_events.redacted.jsonl"},
+        "content_source_sha256": {"$ref": "#/$defs/sha256"},
+        "findings_count": {"type": "integer", "minimum": 0},
+        "large_content_policy": {
+          "const": "do_not_resolve_raw_mine_cas"
+        }
+      }
+    },
+    "turns": {
+      "type": "array",
+      "items": {"$ref": "#/$defs/turn"}
+    }
+  },
+  "$defs": {
+    "sha256": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "event_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "event_ids": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {"$ref": "#/$defs/event_id"}
+    },
+    "treated_value": {
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["available", "value"],
+          "properties": {
+            "available": {"const": true},
+            "value": {}
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["available", "reason"],
+          "properties": {
+            "available": {"const": false},
+            "reason": {
+              "enum": [
+                "privacy_treated_large_content_unavailable",
+                "source_field_unavailable",
+                "tool_result_unavailable"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "message_evidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["event_id", "content"],
+      "properties": {
+        "event_id": {"$ref": "#/$defs/event_id"},
+        "content": {"$ref": "#/$defs/treated_value"}
+      }
+    },
+    "tool_call": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "ordinal",
+        "native_id_field",
+        "native_call_id",
+        "kind",
+        "tool_name",
+        "request_event_id",
+        "result_event_id",
+        "effect_event_ids",
+        "subsequent_agent_message_event_ids",
+        "state",
+        "arguments",
+        "result"
+      ],
+      "properties": {
+        "ordinal": {"type": "integer", "minimum": 1},
+        "native_id_field": {"enum": ["tool_use_id", "item_id"]},
+        "native_call_id": {"type": "string", "minLength": 1},
+        "kind": {"enum": ["command", "filesystem", "mcp", "tool"]},
+        "tool_name": {"type": "string", "minLength": 1},
+        "request_event_id": {"$ref": "#/$defs/event_id"},
+        "result_event_id": {
+          "oneOf": [
+            {"$ref": "#/$defs/event_id"},
+            {"type": "null"}
+          ]
+        },
+        "effect_event_ids": {"$ref": "#/$defs/event_ids"},
+        "subsequent_agent_message_event_ids": {"$ref": "#/$defs/event_ids"},
+        "state": {
+          "enum": [
+            "RESULT_OBSERVED",
+            "SUCCEEDED",
+            "FAILED",
+            "INTERRUPTED",
+            "RESULT_UNAVAILABLE"
+          ]
+        },
+        "arguments": {"$ref": "#/$defs/treated_value"},
+        "result": {"$ref": "#/$defs/treated_value"}
+      }
+    },
+    "turn": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "session_id",
+        "turn_id",
+        "user_inputs",
+        "agent_messages",
+        "final_agent_message_event_ids",
+        "tool_calls"
+      ],
+      "properties": {
+        "session_id": {"type": "string", "minLength": 1},
+        "turn_id": {"type": "string", "minLength": 1},
+        "user_inputs": {
+          "type": "array",
+          "items": {"$ref": "#/$defs/message_evidence"}
+        },
+        "agent_messages": {
+          "type": "array",
+          "items": {"$ref": "#/$defs/message_evidence"}
+        },
+        "final_agent_message_event_ids": {"$ref": "#/$defs/event_ids"},
+        "tool_calls": {
+          "type": "array",
+          "items": {"$ref": "#/$defs/tool_call"}
+        }
+      }
+    }
+  }
+}
