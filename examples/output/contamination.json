@@ -1,0 +1,38 @@
+{
+  "4": {
+    "benchmark_matches": {
+      "HumanEval": 53
+    },
+    "certified_clean": false,
+    "contaminated_ngrams": 53,
+    "flagged_spans": [
+      {
+        "benchmark": "HumanEval",
+        "benchmark_id": "HumanEval/0",
+        "details": {
+          "detection_method": "exact_13gram_match"
+        },
+        "end_char": 269,
+        "end_token": 75,
+        "matched_text": "def has_close_elements(numbers: List[float], threshold: float) -> bool: \"\"\" Check if in given list of numbers, are any two numbers closer to each other than given threshold. >>> has_close_elements([1.0, 2.0, 3.0], 0.5) False",
+        "ngram_count": 53,
+        "role": "user",
+        "similarity_score": 1.0,
+        "start_char": 45,
+        "start_token": 10,
+        "turn_index": 4
+      }
+    ],
+    "max_minhash_similarity": 0.5,
+    "metadata": {
+      "minhash_threshold": 0.8,
+      "ngram_size": 13,
+      "overlap_threshold": 0.0
+    },
+    "overlap_percentage": 80.303,
+    "overlap_ratio": 0.803030303030303,
+    "scanned_turns": 1,
+    "total_ngrams": 66,
+    "total_tokens": 78
+  }
+}

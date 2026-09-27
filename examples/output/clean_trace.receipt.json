@@ -1,0 +1,80 @@
+{
+  "receipt_id": "file-receipt-7c15a6d133e0",
+  "timestamp": "2026-09-27T13:48:49Z",
+  "input_hash": "7c15a6d133e0469332515c0a1afdcd2a416b875ec7eb3e0ae59b4534d1f7ca09",
+  "output_hash": "8e0969cdaf2961a152f19a3f843c519418391e89d0fd67771ffd10570c6b9f5d",
+  "findings_count": 5,
+  "findings_by_category": {
+    "EMAIL": 1,
+    "PHONE": 1,
+    "PATH": 1,
+    "API_KEY": 1,
+    "IP_ADDRESS": 1
+  },
+  "findings": [
+    {
+      "rule": "email",
+      "category": "EMAIL",
+      "matched_preview": "maria.lo…",
+      "span": "43:71",
+      "start": 43,
+      "end": 71,
+      "replacement": "[REDACTED_EMAIL]",
+      "confidence": 0.95,
+      "path": "$[0].content"
+    },
+    {
+      "rule": "phone_international",
+      "category": "PHONE",
+      "matched_preview": "+1-415-5…",
+      "span": "75:90",
+      "start": 75,
+      "end": 90,
+      "replacement": "[REDACTED_PHONE]",
+      "confidence": 0.95,
+      "path": "$[0].content"
+    },
+    {
+      "rule": "user_home_path",
+      "category": "PATH",
+      "matched_preview": "/home/ml…",
+      "span": "8:35",
+      "start": 8,
+      "end": 35,
+      "replacement": "[REDACTED_PATH]",
+      "confidence": 0.95,
+      "path": "$[1].content"
+    },
+    {
+      "rule": "openai_api_key",
+      "category": "API_KEY",
+      "matched_preview": "sk-proj-…",
+      "span": "22:62",
+      "start": 22,
+      "end": 62,
+      "replacement": "[REDACTED_API_KEY]",
+      "confidence": 0.95,
+      "path": "$[2].content"
+    },
+    {
+      "rule": "ipv4_address",
+      "category": "IP_ADDRESS",
+      "matched_preview": "10.20.4.…",
+      "span": "74:84",
+      "start": 74,
+      "end": 84,
+      "replacement": "[REDACTED_IP_ADDRESS]",
+      "confidence": 0.95,
+      "path": "$[2].content"
+    }
+  ],
+  "is_clean": true,
+  "metadata": {
+    "input_file": "messy_trace.jsonl",
+    "output_file": "clean_trace.jsonl",
+    "file_type": "jsonl",
+    "input_size_bytes": 898,
+    "output_size_bytes": 864
+  },
+  "receipt_hash": "fd22e8ef87fbb2258f120518594579b5f3203e535440c33524b713237b4b8a10"
+}

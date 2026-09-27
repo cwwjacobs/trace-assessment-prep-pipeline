@@ -9,6 +9,17 @@ needed" to a prompt, tool or guardrail fix to a fine-tune. Making that call
 requires evidence you can trust. This pipeline produces it: every step leaves a
 receipt, and nothing is silently repaired or guessed.
 
+![Demo: a synthetic agent trace is scrubbed and checked for benchmark leakage](examples/demo.gif)
+
+The recording above is a real run of [`examples/demo.py`](examples/demo.py) on
+a synthetic trace: the email, phone, key, IP and home path are caught, and a
+HumanEval item slipped into the conversation is quarantined. Its outputs and
+receipt are committed in [`examples/output/`](examples/output/). Reproduce it
+with `python3 examples/demo.py`, or re-render the recording with
+[VHS](https://github.com/charmbracelet/vhs): `vhs examples/demo.tape`. The
+cleaned output hash is identical on every run; the receipt carries a fresh
+timestamp each time.
+
 - **Privacy scrubbing:** emails, phone numbers, IPs, API keys (OpenAI, Anthropic,
   AWS, GitHub), private keys, JWTs, SSNs, card numbers and home-directory paths
   are replaced with fixed tokens such as `[REDACTED_EMAIL]`. Every run writes a
@@ -59,7 +70,8 @@ src/goldtrace_mint/factory/   Library modules:
     assay_report.py             proof-of-lift statistics
 src/goldtrace_hallmark/       Verifies that minted files match their claims
 src/goldtrace_vault/          Content-addressed store for admitted product lots
-tests/                        509 tests
+tests/                        510 tests
+examples/                     worked demo, its outputs and the VHS tape
 ```
 
 ## Quick start

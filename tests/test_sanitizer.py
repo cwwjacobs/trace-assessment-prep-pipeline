@@ -909,6 +909,16 @@ class TestSanitizeFileBatch:
         assert stored_receipt["input_hash"] == receipt.input_hash
         assert stored_receipt["output_hash"] == receipt.output_hash
 
+    def test_receipt_records_file_names_not_directories(self, tmp_path: Path) -> None:
+        """A redaction receipt must not leak the operator's directory layout."""
+        input_file = tmp_path / "raw.txt"
+        input_file.write_text("contact admin@example.com", encoding="utf-8")
+        receipt = sanitize_file(input_file, tmp_path / "clean.txt")
+
+        assert receipt.metadata["input_file"] == "raw.txt"
+        assert receipt.metadata["output_file"] == "clean.txt"
+        assert str(tmp_path) not in json.dumps(receipt.to_dict())
+
     def test_sanitize_jsonl_file(self, tmp_path: Path) -> None:
         """Verify sanitize_file on a JSONL / NDJSON dataset file."""
         input_file = tmp_path / "traces.jsonl"

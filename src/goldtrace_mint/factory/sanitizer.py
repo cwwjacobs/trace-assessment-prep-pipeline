@@ -1594,8 +1594,10 @@ def sanitize_file(
         findings=[f.to_dict() for f in all_findings],
         is_clean=is_clean,
         metadata={
-            "input_file": str(in_p.resolve()),
-            "output_file": str(out_p.resolve()),
+            # File names only: an absolute path would put the operator's own
+            # directory layout into a receipt that exists to prove redaction.
+            "input_file": in_p.name,
+            "output_file": out_p.name,
             "file_type": file_type,
             "input_size_bytes": len(raw_bytes),
             "output_size_bytes": len(out_bytes),
